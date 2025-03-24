@@ -22,22 +22,10 @@ class Article(models.Model):
     class Meta:
         verbose_name = 'Статья'
         verbose_name_plural = 'Статьи'
-        ordering = ['-published_at']
+        ordering = ['-is_main', 'tag__name']
 
     def __str__(self):
         return self.title
-
-    def get_sorted_tags(self):
-        """
-        Возвращает теги, отсортированные так, что основной раздел идет первым,
-        а остальные — в алфавитном порядке.
-        """
-        main_tag = self.scopes.filter(is_main=True).first()
-        other_tags = self.scopes.filter(is_main=False).order_by('tag__name')
-        if main_tag:
-            return [main_tag] + list(other_tags)
-        return list(other_tags)
-
 
 class Scope(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='scopes', verbose_name='Статья')
