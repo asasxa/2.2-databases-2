@@ -17,6 +17,7 @@ class Tag(models.Model):
 class Article(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     text = models.TextField(verbose_name='Текст статьи')
+    image = models.ImageField(upload_to='', blank=True, null=True, verbose_name='Изображение')
     published_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
 
     class Meta:
@@ -27,17 +28,6 @@ class Article(models.Model):
     def __str__(self):
         return self.title
 
-    def get_sorted_tags(self):
-        """
-        Возвращает теги, отсортированные так, что основной раздел идет первым,
-        а остальные — в алфавитном порядке.
-        """
-        main_tag = self.scopes.filter(is_main=True).first()
-        other_tags = self.scopes.filter(is_main=False).order_by('tag__name')
-        if main_tag:
-            return [main_tag] + list(other_tags)
-        return list(other_tags)
-
 
 class Scope(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='scopes', verbose_name='Статья')
@@ -47,6 +37,7 @@ class Scope(models.Model):
     class Meta:
         verbose_name = 'Связь статьи с разделом'
         verbose_name_plural = 'Связи статей с разделами'
+        ordering = ['-is_main', 'tag__name']
 
     def __str__(self):
         return f'{self.article.title} - {self.tag.name} (основной: {self.is_main})'

@@ -7,7 +7,6 @@ from .models import Scope, Article, Tag
 
 class ScopeInlineFormset(BaseInlineFormSet):
     def clean(self):
-        super().clean()
         main_count = 0
         for form in self.forms:
             if not form.cleaned_data.get('DELETE') and form.cleaned_data.get('is_main'):
