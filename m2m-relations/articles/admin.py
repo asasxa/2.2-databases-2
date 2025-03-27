@@ -7,7 +7,6 @@ from .models import Scope, Article, Tag
 
 class ScopeInlineFormset(BaseInlineFormSet):
     def clean(self):
-        super().clean()
         main_count = 0
         for form in self.forms:
             if not form.cleaned_data.get('DELETE') and form.cleaned_data.get('is_main'):
@@ -25,6 +24,12 @@ class ScopeInline(admin.TabularInline):
 class ArticleAdmin(admin.ModelAdmin):
     inlines = [ScopeInline]
     list_display = ('title', 'published_at')
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
 
 
 @admin.register(Tag)
